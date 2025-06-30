@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Aventura en la Jungla de las Multiplicaciones Mágicas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Comic Sans MS', cursive;
+            background-color: #2d5a2d;
+            color: white;
+            text-align: center;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Pantalla de inicio */
+        .start-screen {
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .start-screen h1 {
+            font-size: 2.5em;
+            text-shadow: 3px 3px 0px #000;
+            margin-bottom: 20px;
+            background-color: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .start-btn {
+            font-size: 1.5em;
+            padding: 15px 30px;
+            background-color: #ff6b35;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #cc5429;
+        }
+
+        .start-btn:hover {
+            background-color: #ff8555;
+            transform: translateY(-2px);
+        }
+
+        /* Tablero de juego */
+        .game-board {
+            background-size: cover;
+            background-position: center;
+            height: 600px;
+            position: relative;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Posición del jugador en el tablero - AQUÍ PUEDES AJUSTAR LAS COORDENADAS */
+        .player-position {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #ff6b35;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        /* Coordenadas para cada posición del 0 al 10 - PERSONALIZA ESTAS COORDENADAS */
+        .pos-0 { left: 50px; top: 500px; }    /* Inicio */
+        .pos-1 { left: 150px; top: 450px; }
+        .pos-2 { left: 250px; top: 400px; }
+        .pos-3 { left: 350px; top: 350px; }
+        .pos-4 { left: 450px; top: 300px; }
+        .pos-5 { left: 550px; top: 250px; }
+        .pos-6 { left: 650px; top: 200px; }
+        .pos-7 { left: 750px; top: 150px; }
+        .pos-8 { left: 650px; top: 100px; }
+        .pos-9 { left: 550px; top: 50px; }
+        .pos-10 { left: 450px; top: 20px; }   /* Tesoro */
+
+        /* Panel de pregunta */
+        .question-panel {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 300px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 5px solid #8B4513;
+            border-radius: 20px;
+            padding: 20px;
+            display: none;
+            z-index: 20;
+        }
+
+        /* Imagen del animal que pregunta - AQUÍ VA LA IMAGEN DEL ANIMAL */
+        .animal-image {
+            width: 80px;
+            height: 80px;
+            background-color: #ddd;
+            border: 2px solid #666;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Bocadillo de diálogo */
+        .speech-bubble {
+            background-color: #fff;
+            border: 3px solid #333;
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 10px;
+            position: relative;
+            color: #333;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .speech-bubble:before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: #333;
+        }
+
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 33px;
+            width: 0;
+            height: 0;
+            border: 12px solid transparent;
+            border-top-color: #fff;
+        }
+
+        /* Controles de respuesta */
+        .answer-controls {
+            margin-top: 15px;
+        }
+
+        .answer-input {
+            font-size: 1.5em;
+            padding: 8px;
+            border: 3px solid #333;
+            border-radius: 10px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .answer-btn {
+            font-size: 1.2em;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .answer-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Información del juego */
+        .game-info {
+            background-color: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        /* Pantalla de victoria */
+        .victory-screen {
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .victory-screen h2 {
+            font-size: 3em;
+            text-shadow: 3px 3px 0px #565656;
+            margin-bottom: 20px;
+            margin-top: 150px;
+            background-color: rgba(255, 215, 0, 0.9);
+            color: #333;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .restart-btn {
+            font-size: 1.3em;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Mensaje de feedback */
+        .feedback {
+            position: absolute;
+            top: 280px;
+            left: 50px;
+            width: 300px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .correct { background-color: rgba(76, 175, 80, 0.9); }
+        .incorrect { background-color: rgba(244, 67, 54, 0.9); }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- PANTALLA DE INICIO - Pon aquí tu imagen de fondo -->
+        <div class="start-screen" style="background-image: url('imagenes/inicio.jpg');">
+            <h1>🌟 La Aventura en la Jungla de las Multiplicaciones Mágicas 🌟</h1>
+            <button class="start-btn" onclick="startGame()">¡Comenzar Aventura!</button>
+        </div>
+
+        <!-- TABLERO DE JUEGO - Pon aquí tu imagen del tablero -->
+        <div class="game-board" style="background-image: url('imagenes/tablero.jpg');">
+            <!-- Posición del jugador -->
+            <div class="player-position pos-0" id="player"></div>
+            
+            <!-- Panel de pregunta -->
+            <div class="question-panel" id="questionPanel">
+                <!-- IMAGEN DEL ANIMAL - Las imágenes se cargarán aquí -->
+                <div class="animal-image" id="animalImage"></div>
+                
+                <!-- Bocadillo con la pregunta -->
+                <div class="speech-bubble" id="questionText">
+                    ¿Cuánto es 2 × 3?
+                </div>
+                
+                <!-- Controles de respuesta -->
+                <div class="answer-controls">
+                    <input type="number" class="answer-input" id="answerInput" placeholder="?">
+                    <button class="answer-btn" onclick="checkAnswer()">Responder</button>
+                </div>
+            </div>
+
+            <!-- Mensaje de feedback -->
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA - Pon aquí tu imagen de tesoro -->
+        <div class="victory-screen" style="background-image: url('imagenes/victoria.jpg');">
+            <h2>🏆 ¡Has encontrado el tesoro! 🏆</h2>
+            <p style="font-size: 1.5em; background-color: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px;">
+                ¡Eres un verdadero explorador de las matemáticas!
+            </p>
+            <button class="restart-btn" onclick="restartGame()">Jugar de Nuevo</button>
+        </div>
+
+        <!-- Información del juego -->
+        <div class="game-info">
+            <p><strong>Posición:</strong> <span id="positionInfo">Inicio (0/10)</span></p>
+            <p><strong>Instrucciones:</strong> Responde correctamente para avanzar hacia el tesoro. ¡Si te equivocas, retrocedes una posición!</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables del juego
+        let currentPosition = 0;
+        let currentQuestion = {};
+        let gameActive = false;
+
+        // Lista de animales para las preguntas - PON AQUÍ LOS NOMBRES DE TUS IMÁGENES
+        const animals = [
+            'mono.jpg',
+            'tigre.jpg', 
+            'elefante.jpg',
+            'loro.jpg',
+            'serpiente.jpg',
+            'jaguar.jpg',
+            'tucán.jpg',
+            'rana.jpg',
+            'cocodrilo.jpg',
+            'mariposa.jpg'
+        ];
+
+        // Función para generar pregunta aleatoria
+        function generateQuestion() {
+            const num1 = Math.floor(Math.random() * 8) + 2; // Del 2 al 9
+            const num2 = Math.floor(Math.random() * 8) + 2; // Del 2 al 9
+            const animal = animals[Math.floor(Math.random() * animals.length)];
+            
+            currentQuestion = {
+                num1: num1,
+                num2: num2,
+                answer: num1 * num2,
+                animal: animal
+            };
+
+            // Actualizar la interfaz
+            document.getElementById('questionText').textContent = `¿Cuánto es ${num1} × ${num2}?`;
+            document.getElementById('animalImage').style.backgroundImage = `url('imagenes/animales/${animal}')`;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+        }
+
+        // Función para verificar respuesta
+        function checkAnswer() {
+            if (!gameActive) return;
+
+            const userAnswer = parseInt(document.getElementById('answerInput').value);
+            const feedback = document.getElementById('feedback');
+            
+            if (userAnswer === currentQuestion.answer) {
+                // Respuesta correcta
+                feedback.textContent = '¡Correcto! Avanzas una posición 🎉';
+                feedback.className = 'feedback correct';
+                feedback.style.display = 'block';
+                
+                currentPosition = Math.min(currentPosition + 1, 10);
+                updatePlayerPosition();
+                
+                // Verificar si ganó
+                if (currentPosition >= 10) {
+                    setTimeout(() => {
+                        endGame();
+                    }, 1500);
+                    return;
+                }
+            } else {
+                // Respuesta incorrecta
+                feedback.textContent = `Incorrecto. La respuesta era ${currentQuestion.answer}. Retrocedes una posición 😔`;
+                feedback.className = 'feedback incorrect';
+                feedback.style.display = 'block';
+                
+                currentPosition = Math.max(currentPosition - 1, 0);
+                updatePlayerPosition();
+            }
+
+            // Ocultar feedback y generar nueva pregunta después de 2 segundos
+            setTimeout(() => {
+                feedback.style.display = 'none';
+                generateQuestion();
+            }, 2000);
+        }
+
+        // Función para actualizar posición del jugador
+        function updatePlayerPosition() {
+            const player = document.getElementById('player');
+            player.className = `player-position pos-${currentPosition}`;
+            document.getElementById('positionInfo').textContent = `Posición ${currentPosition} (${currentPosition}/10)`;
+        }
+
+        // Función para iniciar el juego
+        function startGame() {
+            document.querySelector('.start-screen').style.display = 'none';
+            document.querySelector('.game-board').style.display = 'block';
+            document.getElementById('questionPanel').style.display = 'block';
+            
+            gameActive = true;
+            currentPosition = 0;
+            updatePlayerPosition();
+            generateQuestion();
+        }
+
+        // Función para terminar el juego
+        function endGame() {
+            gameActive = false;
+            document.querySelector('.game-board').style.display = 'none';
+            document.querySelector('.victory-screen').style.display = 'flex';
+        }
+
+        // Función para reiniciar el juego
+        function restartGame() {
+            document.querySelector('.victory-screen').style.display = 'none';
+            document.querySelector('.start-screen').style.display = 'flex';
+            currentPosition = 0;
+            gameActive = false;
+        }
+
+        // Permitir responder con Enter
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && gameActive) {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
